@@ -21,3 +21,29 @@ Recurrent neural networks with multiple hidden layers are actually just a specia
 
 #### Symmetrically connected networks
 Like recurrent networks but have same weight in both directions. Much easier to analyse than recurrent networks but also more restricted in what they can do. They obey an energy function and cannot model cycles.
+
+
+
+
+## Lecture 2b
+Standard paradigm for statistical pattern recognition
+
+1. Convert raw input into a vector of features using handwritten programs.
+1. Learn weights that use these features to get a single scalar decision quantity.
+1. If this quantity is above a certain threshold, identify the input as that class.
+
+This is the model that a standard Perceptron or alpha Perceptron uses.
+
+The decision unit in the Perceptron is a binary threshold neuron.
+
+For convenience, we can treat the bias as a weight with an input of 1 so that we can treat the bias just like another weight. Also remember that the threshold is just the negative of a bias.
+
+The perceptron convergence procedure or training procedure
+
+1. Add one to each input vector to turn the bias into a weight.
+1. Pick the a training case.
+    * If output is correct, don't change weights.
+    * If incorrectly outputs a zero, add the input vector to the weight vector.
+    * If incorrectly outputs a one, subtract the input vector from the weight vector.
+
+This is guaranteed to get a set of weights that will get the right answer for all the training cases if it exists.
