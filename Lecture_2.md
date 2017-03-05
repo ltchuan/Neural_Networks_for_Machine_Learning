@@ -47,3 +47,20 @@ The perceptron convergence procedure or training procedure
     * If incorrectly outputs a one, subtract the input vector from the weight vector.
 
 This is guaranteed to get a set of weights that will get the right answer for all the training cases if it exists.
+
+
+
+## Lecture 2c
+### Geometric view of perceptrons
+#### Weight-space
+This space has one dimension for each weight so a point in this space represents a setting for all the weights. 
+
+Training cases will be hyper-planes (through the origin if we have eliminated the threshold) in this space. Therefore the weights have to lie on one side of the hyper-plane to get the right answer for that training case.
+
+Mathematically, the input vector (training case) will be a normal vector to the hyper-plane. Say that the correct output is 1. Any weight point that gives the correct answer will be on the same side as the input vector points. 
+
+We can see that this is correct as if we take the dot product between the weight vector (centred at the origin) and input vector, we would get a positive value if the angle between these two vectors is less than 90 degrees. 
+
+If we combine multiple input vectors, we will either get a hyper-cone of feasible solutions where the weights give the correct answers for all the input vectors or find that it is impossible to correctly classify all the input vectors.
+
+We can also see that the problem is convex from this as if we have two different weight points that both lie in the hyper-cone of feasible solutions, any point between these two points will also lie in the hyper-cone. 
