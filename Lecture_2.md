@@ -64,3 +64,26 @@ We can see that this is correct as if we take the dot product between the weight
 If we combine multiple input vectors, we will either get a hyper-cone of feasible solutions where the weights give the correct answers for all the input vectors or find that it is impossible to correctly classify all the input vectors.
 
 We can also see that the problem is convex from this as if we have two different weight points that both lie in the hyper-cone of feasible solutions, any point between these two points will also lie in the hyper-cone. 
+
+
+
+
+## Lecture 2d
+### Proof that the perceptron learning procedure works
+We wish to prove the the perceptron learning procedure will eventually get us into the hyper-cone of feasible solutions. 
+
+Let us assume that there is in fact a feasible solution to the training cases. Consider a point that lies in the hyper-cone of feasible solutions and our current weight point that incorrectly classifies at least one of the training cases. 
+
+We can work out the squared distance between these two points as `$d_a^2 + d_b^2$` where `$d_a$` is the distance along the input vector direction and `$d_b$` is the distance perpendicular to this.
+
+Using the learning procedure, the distance `$d_a$` will get smaller and the distance `$d_b$` won't change.
+
+Ideally, we would want the procedure to be moving the current weight point so that it is closer to all feasible weight point. However, this is not the case, as if we consider a feasible weight point that is just right near the plane for a training case, our procedure might 'overshoot' this weight point and hence actually get further away.
+
+This is happening because our input vector is larger longer than the perpendicular distance between this feasible weight vector and the training case hyper-plane.
+
+This suggests a way to fix this, we can define a generously feasible weight point as one that gets the solution right for all training cases by at least the length of the input vector for all cases.
+
+Now we can see that whenever we get an incorrectly solution, the learning procedure will always reduce the squared distance to all the generously feasible weight points by at least the squared length of the input vector.
+
+From this we can prove convergence. Every time we make a mistake, we are reducing the distance to every point the generously feasible region. Hence, as long as none of our input vectors are infinitesimally small, we will get to this feasible region after a finite number of steps as long as this region exits.
