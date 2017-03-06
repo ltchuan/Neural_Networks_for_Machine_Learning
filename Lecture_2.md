@@ -87,3 +87,76 @@ This suggests a way to fix this, we can define a generously feasible weight poin
 Now we can see that whenever we get an incorrectly solution, the learning procedure will always reduce the squared distance to all the generously feasible weight points by at least the squared length of the input vector.
 
 From this we can prove convergence. Every time we make a mistake, we are reducing the distance to every point the generously feasible region. Hence, as long as none of our input vectors are infinitesimally small, we will get to this feasible region after a finite number of steps as long as this region exits.
+
+
+
+
+## Lecture 2e
+### Limitations of perceptrons
+The limitations stem from the kinds of features used. The limitations of perceptrons emphasises that the difficulty of learning is learning the right features.
+
+If you can choose as many features are you want and were using binary input vectors, you could just link a separate feature unit to each input and make any possible discrimination between the inputs. However, this wouldn't generalise as if you add new inputs you would need new feature units and you won't know what weights to put on these.
+
+Once you have chosen the features, perceptrons have very strong limitations on what they can learn to do.
+
+
+#### Discriminating if two binary digits are the same
+An example of what perceptrons can't do. Say we wish to teach a perceptron to classify whether two binary digits are the same. So we should have `$(0,0)\rightarrow 1$`, `$(0,1)\rightarrow 0$`, `$(1,0)\rightarrow 0$` and `$(1,1)\rightarrow 1$`. However, a perceptron cannot learn this.
+
+To show this, let's right the constraints. We have `$0 \ge \theta$`, `$w_2 < \theta$`, `$w_1 < \theta$` and `$w_1 + w_2 \ge \theta$`, where `$\theta$` is the threshold. 
+
+If we add together the first and the last we get `$w_1 + w_2 \ge 2\theta$` and if we add together the middle two, we get `$w_1 + w_2 < 2\theta$`. These two constraints are obviously contradictory.
+
+Another way to see that this is impossible is geometrically. Consider a data-space in which points denote inputs and our weights now correspond to hyper-planes (i.e. the opposite of what we were doing with weight space). (Self note: is this the dual of weight space?).
+
+The hyper-plane will be normal to the weight vector and would be offset from the origin by a distance equal to the threshold. Plotting this, we get
+```
+F----------T
+|          |
+|          |
+|          |
+T----------F
+```
+where T indicates the places where we should get true or 1 and F indicates the places where we should get false. Obviously, there is no way we can draw a line through this such that we separate the T's on one side and the F's on the other. 
+
+This is called a set of training cases that is not linearly separable.
+
+
+#### Discriminating simple patterns under translation with wrap-around
+Another example is if we wish to recognise patterns even if they are translated. Can our binary threshold unit discriminate between two different patterns with the same number of pixels? This is impossible if our patterns wrap-around when translated.
+
+Say we have this pattern, pattern A
+```
+□□■□□■■□□■□□□□□□
+□□□□■□□■■□□■□□□□
+□□■□□□□□□□□■□□■■
+```
+and pattern B
+```
+□□■■□□□■■□□□□□□□
+□□□□■■□□□■■□□□□□
+□□■■□□□□□□□□□■■□
+```
+Note that both patterns have 4 pixels. A binary threshold unit cannot learn to discriminate between these two patterns.
+
+To show this, suppose we have training cases where pattern A is in all possible positions. Since pattern A has 4 pixels, for a given pixel location, there will be 4 translations of pattern A that have that pixel location active.
+
+If we consider all these patterns together, the total input that the decision unit receives will be 4 times the sum of all the weights.
+
+Similarly for pattern B, lets also consider all possible translations. Once again, each pixel location will be activated by 4 different translations of pattern B. So once again the total input received by the decision unit over all these patterns will be four times the sum of all the weights.
+
+To discriminate between these two patterns, we have to have weights that every case of pattern A will provide more input to the decision unit than every case of pattern B. But this is impossible as if we sum over all the cases of pattern A, we get the same amount of input as if we sum over all the cases of pattern B.
+
+This is a particular case of Minsky and Papert's group invariance theorem. This theorem says that a perceptron cannot learn to recognise a pattern under transformation if the transformations form a group.
+
+If we wish to make a perceptron that can deal with these transformations, we would have to hand-code features to recognise these transformations and so we are essentially hand-coding the pattern recognition, rather than learning it.
+
+In order to overcome this, we have to make a neural network that can learn the feature detectors rather than just learning the weights for the feature detectors. (Guess this means use hidden layers which act as feature detectors?).
+
+If we add more layers to hidden units, this doesn't help as the result is still linear. 
+
+We can make the perceptrons much more powerful by putting in essentially hand coded hidden units, although these aren't actually hidden units since we have hand coded them (i.e. it is not enough to just have fixed output non-linearities).
+
+To truly overcome these limitations, we need adaptive, non-linear hidden units but if we do this, we need a way to train them. This is essentially adapting all the weights rather than just the last layer like in a perceptron. 
+
+Learning weights going into hidden units is equivalent to learning features and this is hard to do as there is nothing directly telling us what feature the hidden unit should be recognising. So the real problem is how do we figure out how to train these hidden units to turn them into the kinds of feature detectors we need to solve a problem.
