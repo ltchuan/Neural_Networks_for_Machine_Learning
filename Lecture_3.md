@@ -83,3 +83,30 @@ Geometrically we will have constraint hyper-planes which are where we will get t
 Using this geometric image, we can also see when the learning will be slow. If our lines that correspond to the training cases are almost parallel, we will get an ellipse that is very elongated. 
 
 In this case, our steepest descent direction can be pointing very far in non-elongated direction (where we don't want to move far) and very little in the elongated direction (where we have to move far to get to the bottom of the bowl).
+
+
+
+
+
+## Lecture 3c
+### Extending learning rule to a single logistic neuron
+Logistic neurons are given by
+```latex
+z = b + \sum_i x_i w_i \\
+y = \frac{1}{1+\exp^{-z}} 
+```
+where `$z$` is called the logit. It is smooth and so has continous derivatives which makes learning easier.
+
+We need to get the derivatives of this which are given by
+```latex
+\frac{\partial z}{\partial w_i} = x_i \\
+\frac{\partial z}{\partial x_i} = w_i \\
+\frac{\partial y}{\partial z} = y(1-y)
+```
+hence
+```latex
+\frac{\partial y}{\partial w_i} = x_i y(1-y) \\
+\frac{\partial E}{\partial w_i} = - \sum_n x^n_i (t^n - y^n)y^n(1-y^n)
+```
+
+This is very similar to the delta-rule, the only difference is the extra `$y^n(1-y^n)$` term.
