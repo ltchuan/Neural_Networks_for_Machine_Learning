@@ -64,3 +64,22 @@ This iterative procedure will get as close to the best answer (smallest possible
 The learning can also be quite slow if two of the input dimensions are quite correlated. E.g. if in our earlier example, all our training cases had the same number of portions of ketchup and chips we wouldn't be able to work out their individual weights. And if they are almost always the same, it can be slow to learn their weights.
 
 Choosing the learning rate can be annoying as too big and the system will be unstable and if its too small, it will take a long time to converge.
+
+
+
+
+## Lecture 3b
+### Error surface for a linear neuron
+To get a geometric understanding of the learning process, we look at the extended weight space. This is a space where we have the weights on a 'horizontal axis' and have one 'vertical axis' that measures the error.
+
+For a linear neuron with squared error, our surface in this space will be a quadratic bowl. That is vertical cross-sections will be parabolas and horizontal cross-sections will be ellipses.
+
+In this space, we can visualise what the delta rule does. For batch learning, it does steepest descent on the error surface.
+
+For the simplest online learning, where we change the weights after each training case rather than for all the training cases at once. 
+
+Geometrically we will have constraint hyper-planes which are where we will get the correct answer for that particular training case. Each step will move us perpendicularly towards the relevant hyper-plane. So our learning algorithm will zig-zag around the direction of steepest descent (assuming we just step through the training cases one by one in order).
+
+Using this geometric image, we can also see when the learning will be slow. If our lines that correspond to the training cases are almost parallel, we will get an ellipse that is very elongated. 
+
+In this case, our steepest descent direction can be pointing very far in non-elongated direction (where we don't want to move far) and very little in the elongated direction (where we have to move far to get to the bottom of the bowl).
