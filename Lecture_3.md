@@ -110,3 +110,76 @@ hence
 ```
 
 This is very similar to the delta-rule, the only difference is the extra `$y^n(1-y^n)$` term.
+
+
+
+
+## Lecture 3c
+### Backpropagation algorithm
+We use this algorithm to learn multiple layers of features (i.e. learning with hidden layers). 
+
+As a reminder, we want hidden layers because networks without them are generally quite limited. We could hand-coded features (like in a perceptron) but then our results would mostly depend on how well this hand-coded bit does. So essentially, by adding hidden layers, we are automating the process of designing these features.
+
+#### Alternative less efficient methods
+One obvious way (that doesn't work as well as backpropagation) is to learn by perturbing the weights. You randomly perturb a weight and see if this improves performance. If it does, you keep this change. 
+
+However, the problem with this is that it is very inefficient as you would have to test the change on multiple training sets. Backpropagation is more efficient than this by a factor of the number of weights, which could be a very large number.
+
+Another issue with randomly changing weights is that near the end of learning, any large change of weights is likely to make things worse and so you would have to make only very small changes.
+
+Alternatively we could perturb all the weights in parallel and try to correlate the performance gain with the weight changes. However this doesn't work very well either as it is difficult to isolate the effect of one weight change without doing very many trials.
+
+We could randomly perturb the activities of hidden units rather than the weights. If we find a perturbed activity helps, we could then compute how to change the weights to give this change in activity. This is more efficient as there are less activities than weights but backpropagation is still better by a factor of the number of neurons.
+
+#### Backpropagation
+We don't know what the hidden units ought to be doing (hence their name), however, we can compute the change in error as we change a hidden activity on a particular training case.
+
+So instead of using activities of the hidden units as our desired states, we use the error derivatives with respect to our activities. As our hidden units can be connected to many different output units, we need to combine these effects. 
+
+We can compute the error derivatives for all the hidden units efficiently at the same time. Also, once we have the error derivatives of the hidden activities, it is easy to compute the error derivatives for the weights going into those hidden units.
+
+
+#### Sketch of the backpropagation algorithm
+First we define the error and get its derivative with respect to the outputs. In this case we will use the squared error 
+```latex
+E = \sum_{j\in\text{output}} (t_j - y_j)^2 \\
+\frac{\partial E}{\partial y_j} = - (t_j - y_j)
+```
+where the subscript index denotes the layer that the variable is in (in this case `$j$` denotes the output layer).
+
+We then use the error derivatives that we have computed for the output layer to compute the error derivatives for the layer below the output. This is the essence of backpropagation, we are using the error derivatives for one layer to calculate the error derivatives of the layer below it.
+
+Let the subscript `$j$` denote one layer and the subscript `$i$` denote the layer below the `$j$` neurons. The output of the `$j$`th neuron is `$y_j$` and the output of the `$i$`th neuron is `$y_i$`. The total input received for a particular neuron is `$z$`, so the total input received for the `$j$`th neuron is `$z_j$`.
+
+First we need to convert from the error derivative wrt the output `$y_j$` to one wrt the input `$z_j$`. We can do this via
+```latex
+\frac{\partial E}{\partial z_j} = \frac{\partial E}{\partial y_j}\frac{\partial y_j}{\partial z_j} \\
+\frac{\partial E}{\partial z_j} = \frac{\partial E}{\partial y_j}[y_j(1-y_j)]
+```
+
+Next we convert from an error derivative wrt the input `$z_j$` to one wrt the output of the layer below it `$y_i$`. Recall that
+```latex
+z_j = b_j + \sum_i w_{ij} y_i
+```
+where `$w_ij$` denotes the weight from `$i$`th neuron to the `$j$` neuron. So
+```latex
+\frac{\partial E}{\partial y_i} = \sum_j \frac{\partial E}{\partial z_j}\frac{\partial z_j}{\partial y_i} \\
+\frac{\partial E}{\partial y_/i} = \sum_j \frac{\partial E}{\partial z_j}[w_{ij}]
+```
+
+Hence
+```latex
+\frac{\partial E}{\partial y_i} = \sum_j \frac{\partial E}{\partial y_j}[y_j(1-y_j)][w_{ij}]
+```
+
+We can also compute the error derivatives wrt the weights on the connections
+```latex
+\frac{\partial E}{\partial w_ij} = \frac{\partial E}{\partial z_j}\frac{\partial z_j}{\partial w_ij} \\
+\frac{\partial E}{\partial w_ij} = \frac{\partial E}{\partial z_j} [y_i]
+```
+
+So it is quite simple to get the error derivative wrt the weights for a given neuron. We simply multiply the quantity that we have computed on that neuron `$\frac{\partial E}{\partial z_j}$` with the activity from the neurons below.
+
+So we started with the derivative of the error wrt to the output of one layer, `$\frac{\partial E}{\partial y_j}$` and ended up with the derivative of the error wrt to the output of layer below it `$\frac{\partial E}{\partial y_i}$`. So clearly we can do this for as many layers as there are and we can also compute the error derivative wrt the weights easily once we have computed the other derivatives.
+
+This is the backpropagation algorithm, it is an algorithm to compute, efficiently, the error derivative with respect to the weight for every single weight in the network given a particular training case.
