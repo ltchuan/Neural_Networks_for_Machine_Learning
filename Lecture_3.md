@@ -183,3 +183,96 @@ So it is quite simple to get the error derivative wrt the weights for a given ne
 So we started with the derivative of the error wrt to the output of one layer, `$\frac{\partial E}{\partial y_j}$` and ended up with the derivative of the error wrt to the output of layer below it `$\frac{\partial E}{\partial y_i}$`. So clearly we can do this for as many layers as there are and we can also compute the error derivative wrt the weights easily once we have computed the other derivatives.
 
 This is the backpropagation algorithm, it is an algorithm to compute, efficiently, the error derivative with respect to the weight for every single weight in the network given a particular training case.
+
+
+
+
+
+## Lecture 3e
+### How to use the derivatives from the backpropagation algorithm
+We have seen how the backpropagation algorithm allows us to compute the error derivatives with respect to all the weights in the network efficiently. This is what allows us to learn efficiently for these networks.
+
+However, we still need to decide other details in order to completely specify the learning procedure. These issues can be summarised as
+* Optimisation issues
+    - How do we use these error derivatives on individual cases to get a good set of weights? (Lecture 6)
+* Generalisation issues
+    - How do we ensure that our learned weights are not over fitted and work well for cases not in our training set? (Lecture 7)
+
+We will look at a very brief overview of these two sets of issues.
+
+#### Optimisation issues
+These issues arise from deciding about how we will use the weight derivatives.
+
+##### The first question is how often do we update the weights? 
+
+###### Online
+We could update the weights after each training case. So we use backpropagation to compute the derivatives for a single training case and then you make a small change to the weights. 
+
+This will zig zag around since each training case will give different error derivatives. But if we make the weight changes small enough, it will head in the right direction on average.
+
+###### Full batch
+Alternatively we can use full batch training where you do a full sweep over all the training cases to compute the total error derivatives. This is done by adding together the error derivatives from each individual training cases. We can then take a small step in that direction.
+
+The problem with this is that we start off with a bad set of weights and we might have a very big training set. So we don't want to go to all that work to fix up some weights that we know are very bad. 
+
+Really we only need to look at a few training cases before we get an idea of the direction these bad weights should go in. We only need to look at a large set of training cases when we are near the end of the training. So this gives us mini batch learning.
+
+###### Mini batch
+As explained above, initially we should only need a small batch and hence in mini batch learning we just take a small random sample of the training cases and go in that direction.
+
+So we will do some zig zagging, but not as much as if we were doing online and we don't have the computational cost of computer the total derivatives from all the training data.
+
+##### Next, we need to decide how much to update (discussed further in Lecture 6)
+We could by hand pick some fixed learning rate and then change each weight by the derivative times this learning rate. But it seems more sensible to adapt the learning rate.
+
+We could do this by considering how the error is changing. If the error is oscillating up and down, then we will reduce the learning rate. But if it is making steady progress, we might increase the learning weight. 
+
+We could even have a separate learning rate for each connection in the network so that some weights learning more quickly than others.
+
+Or going even further, we might decide we don't want to go in the direction of steepest descent at all. If you recall from the earlier example of linear neurons, when we had very correlated inputs, we had a very elongated elliptical error surface. Hence this meant that going in the direction of steepest descent was actually going at almost right angles to the direction we wanted to go in to get the minimum.
+
+This is actually typical of most learning problems towards the end of learning. So there are actually better directions to go in than the direction of steepest descent but the problem is that these are hard to work out.
+
+
+#### Generalisation issues
+
+##### The errors
+The second set of issues is to do with how well the network generalises to inputs that it didn't see in training. The problem is that the training data contains information about the mapping from input to output but it also contains two types of noise.
+
+1. The target values may be unreliable (normally only a minor worry for neural networks).
+1. There is sampling error
+
+If we take any set of sample data (especially small ones), we will find that there will be accidental regularities in the data just because of how the particular training cases were chosen.
+ 
+ For example, if you are showing someone some polygons, you might show them a square and a rectangle. These are polygons, but there's no way to realise that polygons can have something other than 4 sides and that the angles don't have to be right angles.
+
+Alternatively you might show a triangle and a hexagon but you can't tell whether polygons are always convex and if their angles are always multiples of 60. 
+
+So how ever you choose you samples, for a finite amount of samples, there are going to be accidental regularities. When we fit a model, there is no way that the model can tell the difference between these accidental regularities and the actual regularities of mapping inputs to outputs. 
+
+So the model will fit both. And if its a very big model it will be very good at fitting this sampling error. This of course will cause it to generalise very badly.
+
+This overfitting can be illustrated by a simple example. Say that we have 6 points with x and y values. We could fit a straight line (2 degrees of freedom) through these points or we could fit a 5th order polynomial (6 degrees of freedom) to these points and fit them exactly.
+
+The complicated model obviously fits the data better but it is not economical. For convincing model, we want a simple model that fits the data surprisingly well. The polynomial does do this because it has 6 degrees of freedom and so wherever these data points are, it would be able to fit them exactly. It is not surprising that a complex model can fit a small number of data points well.
+
+
+##### Ways to reduce overfitting
+There a large number of different method to reduce overfitting for both neural networks as well as other models. They will be described in more detail in Lecture 7 but here is a brief survey.
+
+* Weight-decay
+    - This is where we try to keep many of the weights in the model small or zero and the idea of this is just to make the model simpler.
+* Weight-sharing
+    - Similar to above, you make the model simpler by requiring that many of the weights have the same value as the others. 
+    - This value is still learnt but it has to be shared.
+* Early stopping
+    - You make yourself a fake test set and as you are training the net, you peak at what is happening on this fake test set.
+    - Once the performance on the fake test set starts to get worse, you stop.
+* Model averaging
+    - You train lots of different neural nets and average together in hopes that this will reduce the errors you are making.
+* Bayesian fitting of neural nets
+    - Fancy form of model averaging.
+* Dropout
+    - You try to make your model more robust by randomly omitting hidden units when you are training it.
+* Generative pre-training
+    - Somewhat more complicated and will be described near the end of the course.
